@@ -1,12 +1,15 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: nginx-pod
-  labels:
-    app: nginx
+  name: mypod
 spec:
   containers:
-    - name: nginx
-      image: nginx:stable
+    - name: mycontainer
+      image: nginx:latest
+      envFrom:
+        - configMapRef:
+            name: myapp
+        - secretRef:
+            name: mysecret
       ports:
         - containerPort: 80
