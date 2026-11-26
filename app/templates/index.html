@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#f5f7f2">
+    <meta name="description" content="A practical, hands-on learning path for Kubernetes fundamentals.">
+    <title>KubePath &mdash; Kubernetes, made practical</title>
+    <style>
+        :root {
+            color-scheme: light;
+            --ink: #17241f;
+            --muted: #64736c;
+            --green: #2f7554;
+            --green-dark: #22563e;
+            --lime: #d3f36b;
+            --paper: #f5f7f2;
+            --line: #e2e8df;
+            --white: #fff;
+            --shadow: 0 24px 70px rgba(31, 54, 42, .11);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            background: var(--paper);
+            color: var(--ink);
+            font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        a {
+            color: inherit;
+        }
+
+        a:focus-visible {
+            outline: 3px solid #89b94c;
+            outline-offset: 4px;
+        }
+
+        .shell {
+            width: min(1120px, calc(100% - 48px));
+            margin-inline: auto;
+        }
+
+        .site-header {
+            display: flex;
+            min-height: 82px;
+            align-items: center;
+            justify-content: space-between;
+            gap: 24px;
+            border-bottom: 1px solid rgba(31, 54, 42, .08);
+        }
+
+        .brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 11px;
+            color: var(--ink);
+            font-size: 17px;
+            font-weight: 760;
+            letter-spacing: -.04em;
+            text-decoration: none;
+        }
+
+        .brand-mark {
+            display: grid;
+            width: 35px;
+            height: 35px;
+            place-items: center;
+            border-radius: 11px;
+            background: var(--green);
+            color: white;
+        }
+
+        .brand-mark svg {
+            width: 22px;
+            height: 22px;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            color: #53625b;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            transition: color .18s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--green);
+        }
+
+        .nav-links .nav-cta {
+            padding: 11px 16px;
+            border-radius: 9px;
+            background: var(--ink);
+            color: white;
+        }
+
+        .hero {
+            display: grid;
+            grid-template-columns: 1fr .9fr;
+            align-items: center;
+            gap: 66px;
+            padding-block: 74px 84px;
+        }
+
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--green);
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: .13em;
+            text-transform: uppercase;
+        }
+
+        .eyebrow-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #83b84f;
+            box-shadow: 0 0 0 4px rgba(131, 184, 79, .15);
+        }
+
+        h1 {
+            max-width: 610px;
+            margin: 20px 0 18px;
+            font-size: clamp(42px, 5.3vw, 68px);
+            font-weight: 730;
+            letter-spacing: -.065em;
+            line-height: 1.04;
+        }
+
+        h1 span {
+            color: var(--green);
+        }
+
+        .hero-copy {
+            max-width: 500px;
+            margin: 0;
+            color: var(--muted);
+            font-size: 16px;
+            line-height: 1.75;
+        }
+
+        .hero-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 30px;
+        }
+
+        .button {
+            display: inline-flex;
+            min-height: 46px;
+            align-items: center;
+            justify-content: center;
+            gap: 9px;
+            padding: 0 17px;
+            border: 1px solid transparent;
+            border-radius: 9px;
+            font-size: 13px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: transform .18s ease, background .18s ease, border-color .18s ease;
+        }
+
+        .button:hover {
+            transform: translateY(-2px);
+        }
+
+        .button-primary {
+            background: var(--green);
+            color: white;
+        }
+
+        .button-primary:hover {
+            background: var(--green-dark);
+        }
+
+        .button-secondary {
+            border-color: #dce4da;
+            background: rgba(255, 255, 255, .6);
+            color: var(--ink);
+        }
+
+        .button-secondary:hover {
+            border-color: #b6c8b7;
+            background: white;
+        }
+
+        .button svg {
+            width: 15px;
+            height: 15px;
+        }
+
+        .hero-note {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 17px;
+            margin-top: 30px;
+            color: #65756c;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .hero-note span {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .check {
+            color: var(--green);
+            font-size: 14px;
+            font-weight: 800;
+        }
+
+        .visual-card {
+            position: relative;
+            overflow: hidden;
+            padding: 23px;
+            border: 1px solid rgba(255, 255, 255, .1);
+            border-radius: 18px;
+            background:
+                radial-gradient(ellipse at 86% 4%, rgba(211, 243, 107, .14), transparent 38%),
+                linear-gradient(145deg, #193329, #10241d 76%);
+            box-shadow: var(--shadow);
+            color: white;
+        }
+
+        .visual-card::after {
+            position: absolute;
+            right: -80px;
+            bottom: -120px;
+            width: 280px;
+            height: 280px;
+            border: 1px solid rgba(211, 243, 107, .11);
+            border-radius: 50%;
+            content: "";
+            pointer-events: none;
+        }
+
+        .visual-topline,
+        .visual-label,
+        .worker-heading,
+        .plane-heading {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .visual-label {
+            justify-content: flex-start;
+            gap: 8px;
+            color: #d4dfd8;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .visual-label svg {
+            width: 16px;
+            height: 16px;
+            color: var(--lime);
+        }
+
+        .concept-badge {
+            padding: 6px 8px;
+            border: 1px solid rgba(255, 255, 255, .16);
+            border-radius: 6px;
+            color: #c1d0c7;
+            font-size: 8px;
+            font-weight: 800;
+            letter-spacing: .11em;
+        }
+
+        .plane {
+            margin-top: 25px;
+            padding: 15px;
+            border: 1px solid rgba(211, 243, 107, .32);
+            border-radius: 11px;
+            background: rgba(211, 243, 107, .07);
+        }
+
+        .plane-heading {
+            justify-content: flex-start;
+            gap: 10px;
+        }
+
+        .plane-icon {
+            display: grid;
+            width: 31px;
+            height: 31px;
+            place-items: center;
+            border-radius: 8px;
+            background: rgba(211, 243, 107, .13);
+            color: var(--lime);
+            font-size: 14px;
+            font-weight: 800;
+        }
+
+        .plane-title,
+        .worker-title {
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .plane-subtitle,
+        .worker-subtitle {
+            margin-top: 3px;
+            color: #9fb3a7;
+            font-size: 9px;
+        }
+
+        .plane-services {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 7px;
+            margin-top: 13px;
+        }
+
+        .plane-services span {
+            padding: 6px 8px;
+            border: 1px solid rgba(255, 255, 255, .1);
+            border-radius: 5px;
+            color: #d2ded7;
+            font-size: 9px;
+        }
+
+        .connector {
+            width: 1px;
+            height: 22px;
+            margin: 0 auto;
+            background: linear-gradient(rgba(211, 243, 107, .7), rgba(211, 243, 107, .12));
+        }
+
+        .workers {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .worker {
+            padding: 13px;
+            border: 1px solid rgba(255, 255, 255, .12);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, .045);
+        }
+
+        .worker-heading {
+            justify-content: flex-start;
+            gap: 8px;
+        }
+
+        .worker-icon {
+            color: #b9d982;
+            font-size: 13px;
+        }
+
+        .pod-list {
+            display: grid;
+            gap: 6px;
+            margin-top: 13px;
+        }
+
+        .pod {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            padding: 7px 8px;
+            border-radius: 5px;
+            background: rgba(7, 18, 14, .28);
+            color: #d0dbd4;
+            font-size: 9px;
+        }
+
+        .pod-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--lime);
+        }
+
+        .visual-footnote {
+            margin: 14px 0 0;
+            color: #8fa498;
+            font-size: 9px;
+            line-height: 1.5;
+        }
+
+        .roadmap {
+            padding-block: 58px 78px;
+            border-top: 1px solid var(--line);
+        }
+
+        .section-heading {
+            display: flex;
+            align-items: end;
+            justify-content: space-between;
+            gap: 24px;
+            margin-bottom: 28px;
+        }
+
+        .section-heading h2 {
+            margin: 11px 0 0;
+            font-size: clamp(27px, 3.2vw, 38px);
+            letter-spacing: -.055em;
+            line-height: 1.12;
+        }
+
+        .section-aside {
+            max-width: 310px;
+            margin: 0 0 3px;
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.65;
+        }
+
+        .path-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+        }
+
+        .path-card {
+            min-height: 211px;
+            padding: 19px;
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, .77);
+            transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+        }
+
+        .path-card:hover {
+            transform: translateY(-4px);
+            border-color: #cbd9c8;
+            box-shadow: 0 14px 35px rgba(31, 54, 42, .07);
+        }
+
+        .card-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .step-number {
+            color: #9aa79e;
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: .12em;
+        }
+
+        .step-icon {
+            display: grid;
+            width: 34px;
+            height: 34px;
+            place-items: center;
+            border-radius: 10px;
+            background: #edf4e9;
+            color: var(--green);
+            font-size: 13px;
+            font-weight: 800;
+        }
+
+        .path-card h3 {
+            margin: 21px 0 8px;
+            font-size: 16px;
+            letter-spacing: -.035em;
+        }
+
+        .path-card p {
+            min-height: 58px;
+            margin: 0;
+            color: var(--muted);
+            font-size: 11px;
+            line-height: 1.65;
+        }
+
+        .file-reference {
+            display: block;
+            margin-top: 16px;
+            color: var(--green);
+            font-size: 9px;
+            font-weight: 700;
+        }
+
+        .quickstart {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            align-items: center;
+            gap: 30px;
+            margin-bottom: 62px;
+            padding: 28px 32px;
+            border-radius: 14px;
+            background: #eaf0e5;
+        }
+
+        .quickstart h2 {
+            margin: 8px 0 7px;
+            font-size: 22px;
+            letter-spacing: -.045em;
+        }
+
+        .quickstart p {
+            max-width: 520px;
+            margin: 0;
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.65;
+        }
+
+        .command {
+            padding: 15px 18px;
+            border: 1px solid #d5dfd1;
+            border-radius: 9px;
+            background: rgba(255, 255, 255, .75);
+            color: #2d4d3b;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            font-size: 12px;
+            white-space: nowrap;
+        }
+
+        .command span {
+            margin-right: 8px;
+            color: #8b9b8e;
+        }
+
+        .site-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            padding-block: 21px 28px;
+            border-top: 1px solid var(--line);
+            color: #78867e;
+            font-size: 10px;
+        }
+
+        .footer-brand {
+            color: var(--ink);
+            font-weight: 750;
+        }
+
+        @media (max-width: 900px) {
+            .hero {
+                grid-template-columns: 1fr 1fr;
+                gap: 32px;
+                padding-block: 58px 65px;
+            }
+
+            .path-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 640px) {
+            .shell {
+                width: min(100% - 34px, 480px);
+            }
+
+            .site-header {
+                min-height: 70px;
+            }
+
+            .nav-links {
+                gap: 15px;
+                font-size: 11px;
+            }
+
+            .nav-links a:first-child {
+                display: none;
+            }
+
+            .nav-links .nav-cta {
+                padding: 9px 11px;
+            }
+
+            .hero {
+                grid-template-columns: 1fr;
+                gap: 35px;
+                padding-block: 49px 55px;
+            }
+
+            h1 {
+                max-width: 440px;
+                font-size: clamp(43px, 12vw, 59px);
+            }
+
+            .hero-copy {
+                font-size: 14px;
+            }
+
+            .visual-card {
+                padding: 18px;
+            }
+
+            .section-heading {
+                display: block;
+            }
+
+            .section-aside {
+                margin-top: 12px;
+            }
+
+            .path-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .path-card {
+                min-height: initial;
+            }
+
+            .path-card p {
+                min-height: initial;
+            }
+
+            .quickstart {
+                grid-template-columns: 1fr;
+                gap: 19px;
+                padding: 23px;
+            }
+
+            .command {
+                overflow-x: auto;
+                font-size: 10px;
+            }
+
+            .site-footer {
+                align-items: flex-start;
+                flex-direction: column;
+                gap: 8px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            html {
+                scroll-behavior: auto;
+            }
+
+            *,
+            *::before,
+            *::after {
+                transition-duration: .01ms !important;
+                animation-duration: .01ms !important;
+                animation-iteration-count: 1 !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="shell">
+        <header class="site-header" id="top">
+            <a class="brand" href="#top" aria-label="KubePath home">
+                <span class="brand-mark" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none">
+                        <path d="M12 2.8 20 7.4v9.2L12 21.2 4 16.6V7.4L12 2.8Z" stroke="currentColor" stroke-width="1.7"/>
+                        <path d="m8 9.5 4-2.3 4 2.3v5l-4 2.3-4-2.3v-5Z" stroke="currentColor" stroke-width="1.5"/>
+                        <path d="M12 7.2v9.6m-4-7.3 8 4.6m0-4.6-8 4.6" stroke="currentColor" stroke-width="1.2"/>
+                    </svg>
+                </span>
+                <span>KubePath</span>
+            </a>
+            <nav class="nav-links" aria-label="Main navigation">
+                <a href="#roadmap">Learning path</a>
+                <a href="#quickstart" class="nav-cta">Start learning <span aria-hidden="true">&#8599;</span></a>
+            </nav>
+        </header>
+
+        <main>
+            <section class="hero" aria-labelledby="hero-title">
+                <div>
+                    <div class="eyebrow"><span class="eyebrow-dot"></span> Kubernetes, made practical</div>
+                    <h1 id="hero-title">Build your Kubernetes <span>confidence.</span></h1>
+                    <p class="hero-copy">
+                        A hands-on path from your first Pod to networking and stateful workloads.
+                        Learn the building blocks with practical manifests and commands.
+                    </p>
+                    <div class="hero-actions">
+                        <a class="button button-primary" href="#roadmap">
+                            Explore the learning path
+                            <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                                <path d="M4 10h12m-5-5 5 5-5 5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </a>
+                        <a class="button button-secondary" href="#quickstart">See the quickstart</a>
+                    </div>
+                    <div class="hero-note" aria-label="Learning highlights">
+                        <span><b class="check" aria-hidden="true">&#10003;</b> YAML-first examples</span>
+                        <span><b class="check" aria-hidden="true">&#10003;</b> Learn by doing</span>
+                    </div>
+                </div>
+
+                <div class="visual-card" role="img" aria-label="Conceptual Kubernetes diagram showing a control plane connected to two worker nodes with Pods">
+                    <div class="visual-topline">
+                        <div class="visual-label">
+                            <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                                <path d="M10 2.2 17 6.1v7.8L10 17.8 3 13.9V6.1l7-3.9Z" stroke="currentColor" stroke-width="1.5"/>
+                                <path d="m7 8.2 3-1.7 3 1.7v3.6l-3 1.7-3-1.7V8.2Z" stroke="currentColor" stroke-width="1.3"/>
+                            </svg>
+                            Kubernetes at a glance
+                        </div>
+                        <span class="concept-badge">CONCEPTUAL</span>
+                    </div>
+
+                    <div class="plane">
+                        <div class="plane-heading">
+                            <span class="plane-icon" aria-hidden="true">&#8984;</span>
+                            <div>
+                                <div class="plane-title">Control plane</div>
+                                <div class="plane-subtitle">Coordinates the cluster</div>
+                            </div>
+                        </div>
+                        <div class="plane-services">
+                            <span>API server</span>
+                            <span>Scheduler</span>
+                            <span>Controller manager</span>
+                        </div>
+                    </div>
+                    <div class="connector" aria-hidden="true"></div>
+                    <div class="workers">
+                        <div class="worker">
+                            <div class="worker-heading">
+                                <span class="worker-icon" aria-hidden="true">&#9638;</span>
+                                <div>
+                                    <div class="worker-title">Worker node</div>
+                                    <div class="worker-subtitle">Runs your workloads</div>
+                                </div>
+                            </div>
+                            <div class="pod-list">
+                                <div class="pod"><span class="pod-dot"></span> nginx-pod</div>
+                                <div class="pod"><span class="pod-dot"></span> app-pod</div>
+                            </div>
+                        </div>
+                        <div class="worker">
+                            <div class="worker-heading">
+                                <span class="worker-icon" aria-hidden="true">&#9638;</span>
+                                <div>
+                                    <div class="worker-title">Worker node</div>
+                                    <div class="worker-subtitle">Scales with demand</div>
+                                </div>
+                            </div>
+                            <div class="pod-list">
+                                <div class="pod"><span class="pod-dot"></span> web-pod</div>
+                                <div class="pod"><span class="pod-dot"></span> api-pod</div>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="visual-footnote">A learning illustration &mdash; not connected to a live cluster.</p>
+                </div>
+            </section>
+
+            <section class="roadmap" id="roadmap" aria-labelledby="roadmap-title">
+                <div class="section-heading">
+                    <div>
+                        <div class="eyebrow">The learning path</div>
+                        <h2 id="roadmap-title">Small steps. Real concepts.</h2>
+                    </div>
+                    <p class="section-aside">Follow the core building blocks in order, then use the manifests to explore each idea hands-on.</p>
+                </div>
+
+                <div class="path-grid">
+                    <article class="path-card">
+                        <div class="card-top">
+                            <span class="step-number">STEP 01</span>
+                            <span class="step-icon" aria-hidden="true">01</span>
+                        </div>
+                        <h3>Pods &amp; configuration</h3>
+                        <p>Run your first workload and provide settings with ConfigMaps and Secrets.</p>
+                        <span class="file-reference">pod.yml &middot; configmap.yml &middot; secrets.yml</span>
+                    </article>
+                    <article class="path-card">
+                        <div class="card-top">
+                            <span class="step-number">STEP 02</span>
+                            <span class="step-icon" aria-hidden="true">02</span>
+                        </div>
+                        <h3>Workload controllers</h3>
+                        <p>Explore replicas, self-healing workloads, and node-level scheduling.</p>
+                        <span class="file-reference">replicaset.yml &middot; daemonset.yml</span>
+                    </article>
+                    <article class="path-card">
+                        <div class="card-top">
+                            <span class="step-number">STEP 03</span>
+                            <span class="step-icon" aria-hidden="true">03</span>
+                        </div>
+                        <h3>Services &amp; networking</h3>
+                        <p>Connect workloads through Services and understand how traffic finds Pods.</p>
+                        <span class="file-reference">services.yml &middot; DNS.md</span>
+                    </article>
+                    <article class="path-card">
+                        <div class="card-top">
+                            <span class="step-number">STEP 04</span>
+                            <span class="step-icon" aria-hidden="true">04</span>
+                        </div>
+                        <h3>Stateful workloads</h3>
+                        <p>See how StatefulSets give applications stable identities and storage.</p>
+                        <span class="file-reference">statefulset.yml</span>
+                    </article>
+                </div>
+            </section>
+
+            <section class="quickstart" id="quickstart" aria-labelledby="quickstart-title">
+                <div>
+                    <div class="eyebrow">Before you begin</div>
+                    <h2 id="quickstart-title">Check your cluster context.</h2>
+                    <p>Make sure kubectl is pointed at the cluster you intend to use before running any lab commands.</p>
+                </div>
+                <code class="command"><span>$</span> kubectl config current-context</code>
+            </section>
+        </main>
+
+        <footer class="site-footer">
+            <span class="footer-brand">KubePath</span>
+            <span>A practical companion for learning Kubernetes fundamentals.</span>
+        </footer>
+    </div>
+</body>
+</html>
